@@ -1,0 +1,4 @@
+.env
+.histfile
+.zcompdum*
+!/zsh/ohmyzsh/

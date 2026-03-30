@@ -1,0 +1,10 @@
+/*
+!.gitignore
+!/btop/
+!/fastfetch/
+!/gh/
+/gh/hosts.yml
+!/nvim/
+!/nvim.bak/
+!/zsh/
+
