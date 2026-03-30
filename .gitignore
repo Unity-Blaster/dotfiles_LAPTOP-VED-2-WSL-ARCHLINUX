@@ -1,10 +1,13 @@
 /*
 !.gitignore
+!/.old/
 !/btop/
 !/fastfetch/
 !/gh/
 /gh/hosts.yml
 !/lazygit/
+~/npm/
 !/nvim/
 !/nvim.bak/
+!/tmux/
 !/zsh/

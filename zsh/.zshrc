@@ -1,7 +1,7 @@
 # ==============================================================================
 # OH MY ZSH SETUP & THEME
 # ==============================================================================
-export ZSH="$HOME/.oh-my-zsh"
+export ZSH="$HOME/.config/zsh/ohmyzsh"
 ZSH_THEME="frisk-unity"
 # ZSH_THEME="tokyonight"
 
@@ -38,13 +38,31 @@ export lzconf="$HOME/.config/nvim/lua/config"
 export lzplugs="$HOME/.config/nvim/lua/plugins"
 
 # ==============================================================================
+# XDG BASE DIRECTORY ENFORCEMENT
+# ==============================================================================
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+# Force stubborn tools to respect XDG
+export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
+export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export GOPATH="$XDG_DATA_HOME/go"
+export ANSIBLE_HOME="$XDG_CONFIG_HOME/ansible"
+export ANSIBLE_CONFIG="$XDG_CONFIG_HOME/ansible/ansible.cfg"
+export ANDROID_USER_HOME="$XDG_DATA_HOME/android"
+
+# ==============================================================================
 # PATH EXPORTS
 # ==============================================================================
 # Consolidated to prevent messy duplicates
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.spicetify:$PATH"
-export PATH="$HOME/go/bin:$HOME/.local/opt/go/bin:$PATH"
+export PATH="$HOME/.local/share/go/bin:$HOME/.local/share/cargo/bin:$HOME/.local/opt/go/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -97,6 +115,15 @@ alias vserver="cd ~/server && v ."
 # Stop 'auto cd' (Executing a directory name to cd into it)
 unsetopt autocd
 eval "$(zoxide init zsh)"
+
+# ==============================================================================
+# WSL AUTO-BOUNCE
+# ==============================================================================
+# If WSL is launched from the default Windows home directory, instantly jump
+# to the native Linux home directory instead.
+if [[ "$PWD" == "/mnt/c/Users/vedan" ]]; then
+  cd ~
+fi
 
 # ==============================================================================
 # HISTORY CONFIGURATION

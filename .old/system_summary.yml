@@ -1,0 +1,28 @@
+---
+- name: Lab Infrastructure Report
+  hosts: homelab
+  gather_facts: yes
+  tasks:
+    - name: Get Device Summary
+      debug:
+        msg: 
+          - "------------------------------------------------"
+          - "Hostname:    {{ ansible_hostname }}"
+          - "OS:          {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Kernel:      {{ ansible_kernel }}"
+          - "Arch:        {{ ansible_architecture }}"
+          - "Processor:   {{ ansible_processor_vcpus }} cores"
+          - "Total RAM:   {{ (ansible_memtotal_mb / 1024) | round(2) }} GB"
+          - "Free RAM:    {{ (ansible_memfree_mb / 1024) | round(2) }} GB"
+          - "------------------------------------------------"
+
+    - name: Specific Phone Info
+      when: "'phone' in inventory_hostname"
+      shell: "getprop ro.product.model"
+      register: phone_model
+
+    - name: Show Phone Model
+      when: "'phone' in inventory_hostname"
+      debug:
+        msg: "Android Device Model: {{ phone_model.stdout }}"
+
