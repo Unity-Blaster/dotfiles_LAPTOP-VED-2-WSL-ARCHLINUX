@@ -4,6 +4,7 @@
 !/fastfetch/
 !/gh/
 /gh/hosts.yml
+!/lazygit/
 !/nvim/
 !/nvim.bak/
 !/zsh/

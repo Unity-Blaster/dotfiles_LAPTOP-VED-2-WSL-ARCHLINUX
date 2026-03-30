@@ -1,0 +1,9 @@
+customCommands:
+  - key: 'P'
+    command: 'git push'
+    context: 'global'
+    description: 'Push to remote with confirmation'
+    prompts:
+      - type: 'confirm'
+        title: 'Push to Remote'
+        body: 'Are you sure you want to push to the remote repository?'
