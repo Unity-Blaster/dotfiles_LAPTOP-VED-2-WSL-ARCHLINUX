@@ -32,6 +32,8 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export ARCHFLAGS="-arch $(uname -m)"
 
+export GEMINI_API_KEY="AIzaSyCtPkmY6hejuigecbGH-QmVmTLBT6ZUzmY"
+
 # Config Paths (Exported so you can use them in scripts/aliases)
 export ZSHCONF="$HOME/.config/zsh/.zshrc"
 export lzconf="$HOME/.config/nvim/lua/config"
@@ -90,6 +92,9 @@ alias v="nvim"
 # --- Zsh & Configs ---
 alias zshconf="v $ZSHCONF"
 alias zshr="source $ZSHCONF && echo 'Zsh reloaded!'"
+alias nuke-zones='find ~ -xdev -type f -name "*:Zone.Identifier" -delete && echo "Windows ghost files vaporized!"'
+# Safely convert all Windows CRLF files to Linux LF (ignoring heavy/binary folders)
+alias fix-crlf='find ~ -xdev -type d \( -name "node_modules" -o -name ".git" -o -name ".next" -o -name ".cache" -o -name ".local" -o -name "server" -o -name "go" \) -prune -o -type f -exec dos2unix -q {} + && echo "All text files converted to Linux line endings!"'
 
 # --- LazyVim Quick Edit ---
 alias vopts="v $lzconf/options.lua"
@@ -97,12 +102,6 @@ alias vkeys="v $lzconf/keymaps.lua"
 alias vplugs="v $lzplugs"
 alias voil="v $lzplugs/oil.lua"
 alias vtheme="v $lzplugs/colorscheme.lua"
-
-# --- Next.js & Node Dev ---
-alias pdev="pnpm dev"
-alias pbuild="pnpm build"
-alias pstart="pnpm start"
-alias plint="pnpm lint"
 
 # --- Server Mount ---
 alias mount-server="sshfs vedan-server@laptop-ved-1:/home/vedan-server ~/server -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,auto_cache,reconnect,kernel_cache,compression=no,Ciphers=aes128-gcm@openssh.com && echo 'Server mounted at ~/server'"

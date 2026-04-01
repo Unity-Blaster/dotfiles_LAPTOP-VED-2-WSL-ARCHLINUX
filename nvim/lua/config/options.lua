@@ -19,16 +19,29 @@ local win32yank = vim.fn.expand("~/.local/bin/win32yank.exe")
 
 -- Force WSL to use win32yank. Note the proper Lua table { } syntax!
 if vim.fn.has("wsl") == 1 then
-  vim.g.clipboard = {
-    name = "win32yank-wsl",
-    copy = {
-      ["+"] = { win32yank, "-i", "--crlf" },
-      ["*"] = { win32yank, "-i", "--crlf" },
-    },
-    paste = {
-      ["+"] = { win32yank, "-o", "--lf" },
-      ["*"] = { win32yank, "-o", "--lf" },
-    },
-    cache_enabled = 0,
-  }
+    vim.g.clipboard = {
+        name = "win32yank-wsl",
+        copy = {
+            ["+"] = { win32yank, "-i", "--crlf" },
+            ["*"] = { win32yank, "-i", "--crlf" },
+        },
+        paste = {
+            ["+"] = { win32yank, "-o", "--lf" },
+            ["*"] = { win32yank, "-o", "--lf" },
+        },
+        cache_enabled = 0,
+    }
 end
+
+-- =========================================================
+-- PRIMEAGEN / NEXT.JS POWER TWEAKS
+-- =========================================================
+-- Allow 'gf' (go to file) to work with Next.js @/ path aliases
+vim.opt.isfname:append("@-@")
+
+-- Disable annoying .swp and backup files (We use Git for backups)
+vim.opt.swapfile = false
+vim.opt.backup = false
+
+-- Make UI interactions and plugin updates feel blazing fast
+vim.opt.updatetime = 50

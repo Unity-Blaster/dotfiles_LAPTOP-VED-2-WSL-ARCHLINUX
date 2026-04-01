@@ -42,3 +42,20 @@ vim.keymap.set("i", ";", ";<c-g>u")
 -- Inject blank lines without leaving normal mode
 vim.keymap.set("n", "<leader>o", "o<Esc>", { desc = "Add blank line below" })
 vim.keymap.set("n", "<leader>O", "O<Esc>", { desc = "Add blank line above" })
+
+-- Force reload file from disk while preserving exact cursor position
+-- Context-Aware Reload: Preserves cursor in both Text Files AND Oil Directories
+vim.keymap.set("n", "<F5>", function()
+  -- Check if we are currently looking at an Oil directory buffer
+  if vim.bo.filetype == "oil" then
+    require("oil.actions").refresh.callback()
+    vim.notify("Directory refreshed", vim.log.levels.INFO, { title = "Oil" })
+    return
+  end
+
+  -- Normal file refresh behavior
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  vim.cmd("edit!")
+  pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+  vim.notify("Buffer reloaded from disk", vim.log.levels.INFO, { title = "Neovim" })
+end, { desc = "Reload Buffer/Directory (Keep Cursor)" })
