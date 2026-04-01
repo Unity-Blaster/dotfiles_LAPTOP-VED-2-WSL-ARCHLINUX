@@ -27,12 +27,12 @@ plugins=(
 # ==============================================================================
 # ENVIRONMENT VARIABLES
 # ==============================================================================
+source ~/secrets_env
+
 export LANG="en_US.UTF-8"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export ARCHFLAGS="-arch $(uname -m)"
-
-export GEMINI_API_KEY="AIzaSyCtPkmY6hejuigecbGH-QmVmTLBT6ZUzmY"
 
 # Config Paths (Exported so you can use them in scripts/aliases)
 export ZSHCONF="$HOME/.config/zsh/.zshrc"
