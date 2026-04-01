@@ -36,6 +36,7 @@ export ARCHFLAGS="-arch $(uname -m)"
 
 # Config Paths (Exported so you can use them in scripts/aliases)
 export ZSHCONF="$HOME/.config/zsh/.zshrc"
+export TMUXCONF="$HOME/.config/tmux/tmux.conf"
 export lzconf="$HOME/.config/nvim/lua/config"
 export lzplugs="$HOME/.config/nvim/lua/plugins"
 
@@ -89,11 +90,13 @@ export NVM_DIR="$HOME/.nvm"
 # --- Editor ---
 alias v="nvim"
 
-# --- Zsh & Configs ---
+# --- Zsh, Tmux & Configs ---
 alias zshconf="v $ZSHCONF"
 alias zshr="source $ZSHCONF && echo 'Zsh reloaded!'"
+alias tmuxconf="v $TMUXCONF"
+
+# --- Cleanup commands ---
 alias nuke-zones='find ~ -xdev -type f -name "*:Zone.Identifier" -delete && echo "Windows ghost files vaporized!"'
-# Safely convert all Windows CRLF files to Linux LF (ignoring heavy/binary folders)
 alias fix-crlf='find ~ -xdev -type d \( -name "node_modules" -o -name ".git" -o -name ".next" -o -name ".cache" -o -name ".local" -o -name "server" -o -name "go" \) -prune -o -type f -exec dos2unix -q {} + && echo "All text files converted to Linux line endings!"'
 
 # --- LazyVim Quick Edit ---
@@ -107,6 +110,9 @@ alias vtheme="v $lzplugs/colorscheme.lua"
 alias mount-server="sshfs vedan-server@laptop-ved-1:/home/vedan-server ~/server -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,auto_cache,reconnect,kernel_cache,compression=no,Ciphers=aes128-gcm@openssh.com && echo 'Server mounted at ~/server'"
 alias umount-server="fusermount3 -u ~/server && echo 'Server unmounted'"
 alias vserver="cd ~/server && v ."
+
+# --- Git ---
+alias ghd="gh dash"
 
 # ==============================================================================
 # ZSH OPTIONS & TWEAKS
@@ -149,13 +155,15 @@ if [[ $- == *i* ]]; then
 
   echo -e "\n"
   # Print system information
-  fastfetch
+  if [[ -z "$TMUX" ]]; then
+    fastfetch
 
-  # Quick check to see if the homelab server is currently connected
-  if mountpoint -q "$HOME/server"; then
-    echo -e "\n\e[32mHomelab Server is MOUNTED at ~/server\e[0m"
-  else
-    echo -e "\n\e[31mHomelab Server is NOT mounted. Type 'mount-server' to connect.\e[0m"
+    # Quick check to see if the homelab server is currently connected
+    if mountpoint -q "$HOME/server"; then
+      echo -e "\n\e[32mHomelab Server is MOUNTED at ~/server\e[0m"
+    else
+      echo -e "\n\e[31mHomelab Server is NOT mounted. Type 'mount-server' to connect.\e[0m"
+    fi
   fi
 
 fi
