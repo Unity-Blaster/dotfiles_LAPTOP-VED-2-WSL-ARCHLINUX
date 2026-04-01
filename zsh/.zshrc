@@ -27,7 +27,7 @@ plugins=(
 # ==============================================================================
 # ENVIRONMENT VARIABLES
 # ==============================================================================
-source ~/secrets_env
+[[ -f ~/secrets_env ]] && source ~/secrets_env
 
 export LANG="en_US.UTF-8"
 export EDITOR="nvim"
@@ -61,7 +61,7 @@ export ANDROID_USER_HOME="$XDG_DATA_HOME/android"
 # PATH EXPORTS
 # ==============================================================================
 # Consolidated to prevent messy duplicates
-export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/scripts:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.spicetify:$PATH"
 export PATH="$HOME/.local/share/go/bin:$HOME/.local/share/cargo/bin:$HOME/.local/opt/go/bin:$PATH"
