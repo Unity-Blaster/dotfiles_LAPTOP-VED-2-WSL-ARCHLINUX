@@ -45,3 +45,41 @@ vim.opt.backup = false
 
 -- Make UI interactions and plugin updates feel blazing fast
 vim.opt.updatetime = 50
+
+-- =========================================================
+-- TMUX TAB RENAMING
+-- =========================================================
+vim.opt.title = false -- Disable native title to avoid conflicts
+
+vim.api.nvim_create_autocmd({ "BufEnter", "DirChanged" }, {
+    callback = function()
+        local name = vim.fn.expand("%:t")
+        if name == "" then
+            name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+        end
+        -- \27k is the safe ASCII escape code for Tmux renaming
+        io.stdout:write("\27k" .. name .. "\27\\")
+    end,
+})
+
+-- =========================================================
+-- BRUTE FORCE LUALINE TRANSPARENCY
+-- =========================================================
+vim.api.nvim_create_autocmd("ColorScheme", {
+    pattern = "*",
+    callback = function()
+        local groups = {
+            "StatusLine",
+            "StatusLineNC",
+            "lualine_c_normal",
+            "lualine_c_inactive",
+            "lualine_c_insert",
+            "lualine_c_visual",
+            "lualine_c_command",
+            "lualine_c_replace",
+        }
+        for _, group in ipairs(groups) do
+            pcall(vim.api.nvim_set_hl, 0, group, { bg = "NONE" })
+        end
+    end,
+})

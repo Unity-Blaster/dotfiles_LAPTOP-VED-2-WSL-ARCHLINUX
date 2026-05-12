@@ -28,10 +28,10 @@ vim.keymap.set("v", ">", ">gv", { desc = "Indent right and keep selection" })
 
 -- Replace the word under the cursor across the whole file
 vim.keymap.set(
-  "n",
-  "<leader>rw",
-  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-  { desc = "Replace word under cursor" }
+    "n",
+    "<leader>rw",
+    [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+    { desc = "Replace word under cursor" }
 )
 
 -- Add granular undo points while typing
@@ -46,16 +46,28 @@ vim.keymap.set("n", "<leader>O", "O<Esc>", { desc = "Add blank line above" })
 -- Force reload file from disk while preserving exact cursor position
 -- Context-Aware Reload: Preserves cursor in both Text Files AND Oil Directories
 vim.keymap.set("n", "<F5>", function()
-  -- Check if we are currently looking at an Oil directory buffer
-  if vim.bo.filetype == "oil" then
-    require("oil.actions").refresh.callback()
-    vim.notify("Directory refreshed", vim.log.levels.INFO, { title = "Oil" })
-    return
-  end
+    -- Check if we are currently looking at an Oil directory buffer
+    if vim.bo.filetype == "oil" then
+        require("oil.actions").refresh.callback()
+        vim.notify("Directory refreshed", vim.log.levels.INFO, { title = "Oil" })
+        return
+    end
 
-  -- Normal file refresh behavior
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  vim.cmd("edit!")
-  pcall(vim.api.nvim_win_set_cursor, 0, cursor)
-  vim.notify("Buffer reloaded from disk", vim.log.levels.INFO, { title = "Neovim" })
+    -- Normal file refresh behavior
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    vim.cmd("edit!")
+    pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+    vim.notify("Buffer reloaded from disk", vim.log.levels.INFO, { title = "Neovim" })
 end, { desc = "Reload Buffer/Directory (Keep Cursor)" })
+
+-- Instantly open the Git Status fuzzy finder with Alt + g
+vim.keymap.set("n", "<M-g>", "<leader>gs", { remap = true, desc = "Git Status Teleporter" })
+
+-- Reload LSP
+vim.keymap.set("n", "<M-r>", "<cmd>LspRestart<cr>", { desc = "Restart LSP" })
+
+-- M-v for Find Files (cwd)
+vim.keymap.set("n", "<M-c>", "<leader>fF", { desc = "Find Files (cwd)", remap = true })
+
+-- M-/ for Live Grep (Root Dir)
+vim.keymap.set("n", "<M-/>", "<leader>/", { desc = "Grep (Root Dir)", remap = true })
