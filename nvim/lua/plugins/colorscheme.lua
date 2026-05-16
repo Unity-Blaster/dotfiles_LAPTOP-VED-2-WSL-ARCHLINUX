@@ -7,7 +7,7 @@ return {
                 sidebars = "transparent",
                 floats = "transparent",
             },
-            on_highlights = function(hl, c)
+            on_highlights = function(hl)
                 -- Force Lualine's middle section and Neovim's statusline to be fully transparent
                 hl.StatusLine = { bg = "NONE" }
                 hl.StatusLineNC = { bg = "NONE" }
