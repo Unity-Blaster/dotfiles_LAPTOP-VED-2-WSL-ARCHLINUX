@@ -40,7 +40,7 @@ Modern, XDG-compliant configuration files for a high-performance development env
 git clone ssh://git@git-ssh.unityblaster.com:2222/vedan/dotfiles_LAPTOP-VED-2-WSL-ARCHLINUX.git ~/.config
 ```
 
-##### Un Authenticated Pull
+##### Unauthenticated Pull
 ```bash
 git clone http://git-ssh.unityblaster.com:3000/vedan/dotfiles_LAPTOP-VED-2-WSL-ARCHLINUX.git ~/.config
 ```
