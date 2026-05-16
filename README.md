@@ -40,6 +40,8 @@ Modern, XDG-compliant configuration files for a high-performance development env
 git clone ssh://git@git-ssh.unityblaster.com/vedan/dotfiles_LAPTOP-VED-2-WSL-ARCHLINUX.git ~/.config
 ```
 
+#### From GitHub (mirrored repo)
+
 ```bash
 git clone git@github.com:Unity-Blaster/dotfiles_LAPTOP-VED-2-WSL-ARCHLINUX.git ~/.config
 ```
