@@ -50,6 +50,8 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export HISTFILE="$HOME/.local/state/zsh/history"
 export PSQL_HISTORY="$HOME/.local/state/psql/history"
+export BUN_INSTALL="$HOME/.bun"
+
 export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
@@ -70,10 +72,11 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.spicetify:$PATH"
 export PATH="$HOME/.local/share/go/bin:$HOME/.local/share/cargo/bin:$HOME/.local/opt/go/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:$PATH"
 export MANPATH="/usr/local/man:$MANPATH"
 
 # ==============================================================================
-# PACKAGE MANAGERS (NVM & PNPM)
+# PACKAGE MANAGERS (NVM, PNPM & BUN)
 # ==============================================================================
 # PNPM setup
 export PNPM_HOME="$HOME/.local/share/pnpm"
@@ -86,6 +89,9 @@ esac
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# bun completions
+[ -s "/home/vedan-wsl/.bun/_bun" ] && source "/home/vedan-wsl/.bun/_bun"
 
 # ==============================================================================
 # ALIASES & FUNCTIONS
@@ -116,6 +122,30 @@ alias vserver="cd ~/server && v ."
 
 # --- Git ---
 alias ghd="gh dash"
+alias gflow="gflow.sh"
+alias gflow-b="gflow_basic.sh"
+
+# --- SSH ---
+alias ssh-lv1="ssh-lv1.sh"
+alias ssh-pv1="ssh-pv1.sh"
+
+# ==============================================================================
+# TMUX TAB RENAMING ENGINE
+# ==============================================================================
+# Title when waiting for a command (shows directory)
+function set_title_precmd() {
+  print -Pn "\e]0;Arch: %~\a"
+}
+
+# Title when a command is running (shows command + directory)
+function set_title_preexec() {
+  # $1 contains the exact command string being executed
+  print -Pn "\e]0;Arch: $1 (%~)\a"
+}
+
+# Register the hooks
+precmd_functions+=(set_title_precmd)
+preexec_functions+=(set_title_preexec)
 
 # ==============================================================================
 # TMUX TAB RENAMING ENGINE
@@ -224,3 +254,6 @@ export FZF_DEFAULT_OPTS=" \
   --color=marker:#B7BDF8,fg+:#CAD3F5,prompt:#C6A0F6,hl+:#ED8796 \
   --color=selected-bg:#AEAEFF \
   --color=border:#6E738D,label:#CAD3F5"
+
+# after everything is running, output status to temp file for checks
+echo "running" >/tmp/arch-wsl-status
