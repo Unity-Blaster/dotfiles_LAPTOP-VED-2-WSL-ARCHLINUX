@@ -5,6 +5,8 @@ export ZSH="$HOME/.config/zsh/ohmyzsh"
 ZSH_THEME="frisk-unity"
 # ZSH_THEME="tokyonight"
 
+DISABLE_AUTO_TITLE="true"
+
 CASE_SENSITIVE="true"
 ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
@@ -27,7 +29,7 @@ plugins=(
 # ==============================================================================
 # ENVIRONMENT VARIABLES
 # ==============================================================================
-[[ -f ~/secrets_env ]] && source ~/secrets_env
+[[ -f ~/.config/secrets.env ]] && source ~/.config/secrets.env
 
 export LANG="en_US.UTF-8"
 export EDITOR="nvim"
@@ -36,6 +38,7 @@ export ARCHFLAGS="-arch $(uname -m)"
 
 # Config Paths (Exported so you can use them in scripts/aliases)
 export ZSHCONF="$HOME/.config/zsh/.zshrc"
+export TMUXCONF="$HOME/.config/tmux/tmux.conf"
 export lzconf="$HOME/.config/nvim/lua/config"
 export lzplugs="$HOME/.config/nvim/lua/plugins"
 
@@ -45,8 +48,10 @@ export lzplugs="$HOME/.config/nvim/lua/plugins"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
+export HISTFILE="$HOME/.local/state/zsh/history"
+export PSQL_HISTORY="$HOME/.local/state/psql/history"
+export BUN_INSTALL="$HOME/.bun"
 
-# Force stubborn tools to respect XDG
 export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
@@ -56,6 +61,7 @@ export GOPATH="$XDG_DATA_HOME/go"
 export ANSIBLE_HOME="$XDG_CONFIG_HOME/ansible"
 export ANSIBLE_CONFIG="$XDG_CONFIG_HOME/ansible/ansible.cfg"
 export ANDROID_USER_HOME="$XDG_DATA_HOME/android"
+export GEMINI_CLI_HOME="$XDG_DATA_HOME/gemini"
 
 # ==============================================================================
 # PATH EXPORTS
@@ -66,10 +72,11 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.spicetify:$PATH"
 export PATH="$HOME/.local/share/go/bin:$HOME/.local/share/cargo/bin:$HOME/.local/opt/go/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:$PATH"
 export MANPATH="/usr/local/man:$MANPATH"
 
 # ==============================================================================
-# PACKAGE MANAGERS (NVM & PNPM)
+# PACKAGE MANAGERS (NVM, PNPM & BUN)
 # ==============================================================================
 # PNPM setup
 export PNPM_HOME="$HOME/.local/share/pnpm"
@@ -83,17 +90,22 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+# bun completions
+[ -s "/home/vedan-wsl/.bun/_bun" ] && source "/home/vedan-wsl/.bun/_bun"
+
 # ==============================================================================
 # ALIASES & FUNCTIONS
 # ==============================================================================
 # --- Editor ---
 alias v="nvim"
 
-# --- Zsh & Configs ---
+# --- Zsh, Tmux & Configs ---
 alias zshconf="v $ZSHCONF"
-alias zshr="source $ZSHCONF && echo 'Zsh reloaded!'"
+alias zshr="source $ZSHCONF && echo -e '\e[1A Zsh reloaded!\n'"
+alias tmuxconf="v $TMUXCONF"
+
+# --- Cleanup commands ---
 alias nuke-zones='find ~ -xdev -type f -name "*:Zone.Identifier" -delete && echo "Windows ghost files vaporized!"'
-# Safely convert all Windows CRLF files to Linux LF (ignoring heavy/binary folders)
 alias fix-crlf='find ~ -xdev -type d \( -name "node_modules" -o -name ".git" -o -name ".next" -o -name ".cache" -o -name ".local" -o -name "server" -o -name "go" \) -prune -o -type f -exec dos2unix -q {} + && echo "All text files converted to Linux line endings!"'
 
 # --- LazyVim Quick Edit ---
@@ -107,6 +119,76 @@ alias vtheme="v $lzplugs/colorscheme.lua"
 alias mount-server="sshfs vedan-server@laptop-ved-1:/home/vedan-server ~/server -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,auto_cache,reconnect,kernel_cache,compression=no,Ciphers=aes128-gcm@openssh.com && echo 'Server mounted at ~/server'"
 alias umount-server="fusermount3 -u ~/server && echo 'Server unmounted'"
 alias vserver="cd ~/server && v ."
+
+# --- Git ---
+alias ghd="gh dash"
+alias gflow="gflow.sh"
+alias gflow-b="gflow_basic.sh"
+
+# --- SSH ---
+alias ssh-lv1="ssh-lv1.sh"
+alias ssh-pv1="ssh-pv1.sh"
+
+# ==============================================================================
+# TMUX TAB RENAMING ENGINE
+# ==============================================================================
+# Title when waiting for a command (shows directory)
+function set_title_precmd() {
+  print -Pn "\e]0;Arch: %~\a"
+}
+
+# Title when a command is running (shows command + directory)
+function set_title_preexec() {
+  # $1 contains the exact command string being executed
+  print -Pn "\e]0;Arch: $1 (%~)\a"
+}
+
+# Register the hooks
+precmd_functions+=(set_title_precmd)
+preexec_functions+=(set_title_preexec)
+
+# ==============================================================================
+# TMUX TAB RENAMING ENGINE
+# ==============================================================================
+if [[ -n "$TMUX" ]]; then
+  function rename_tmux_window() {
+    # \033k is the safe Tmux window-rename sequence
+    printf "\033k%s\033\\" "$1"
+  }
+
+  function preexec() {
+    # Use standard POSIX 'read' to split the command into variables!
+    # This completely bypasses the shfmt Zsh-array parsing error!
+    local cmd1 cmd2 rest
+    read -r cmd1 cmd2 rest <<<"$1"
+
+    if [[ "$cmd1" == "v" || "$cmd1" == "nvim" ]]; then
+      # Do nothing. Let Neovim handle its own renaming!
+      return
+    elif [[ "$cmd1" == "gemini" ]]; then
+      rename_tmux_window "gem"
+    elif [[ "$cmd1" == "psql" ]]; then
+      rename_tmux_window "psql"
+    elif [[ "$cmd1" == "docker" ]]; then
+      rename_tmux_window "doc"
+    elif [[ "$cmd1" == "ssh" ]]; then
+      rename_tmux_window "ssh"
+    elif [[ "$cmd1" == "pnpm" ]]; then
+      rename_tmux_window "pn $cmd2"
+    else
+      # Grab the command and a maximum of 1 argument (e.g., 'pnpm dev' or 'psql')
+      local window_name="$cmd1 $cmd2"
+      # Trim trailing spaces if there was no second argument
+      window_name=$(echo "$window_name" | xargs)
+      rename_tmux_window "$window_name"
+    fi
+  }
+
+  function precmd() {
+    # When a command finishes and drops back to the prompt, name the tab zsh
+    rename_tmux_window "zsh"
+  }
+fi
 
 # ==============================================================================
 # ZSH OPTIONS & TWEAKS
@@ -136,6 +218,7 @@ setopt SHARE_HISTORY        # Share history across all open Tmux panes/windows i
 setopt HIST_IGNORE_DUPS     # Don't record an entry if it's the exact same as the last one
 setopt HIST_IGNORE_ALL_DUPS # Delete old duplicate commands to keep history clean
 setopt HIST_REDUCE_BLANKS   # Remove superfluous blanks from history items
+setopt HIST_FIND_NO_DUPS    # Ensure multi-line commands are saved as such
 
 # LOAD OH-MY-ZSH AFTER EVERYTHING IS SET UP
 source $ZSH/oh-my-zsh.sh
@@ -147,17 +230,18 @@ source $ZSH/oh-my-zsh.sh
 # This prevents fastfetch from breaking background tasks like SCP or SSH tunneling.
 if [[ $- == *i* ]]; then
 
-  echo -e "\n"
   # Print system information
-  fastfetch
+  if [[ -z "$TMUX" ]]; then
+    echo -e "\n"
+    fastfetch
 
-  # Quick check to see if the homelab server is currently connected
-  if mountpoint -q "$HOME/server"; then
-    echo -e "\n\e[32mHomelab Server is MOUNTED at ~/server\e[0m"
-  else
-    echo -e "\n\e[31mHomelab Server is NOT mounted. Type 'mount-server' to connect.\e[0m"
+    # Quick check to see if the homelab server is currently connected
+    if mountpoint -q "$HOME/server"; then
+      echo -e "\n\e[32mHomelab Server is MOUNTED at ~/server\e[0m\n"
+    else
+      echo -e "\n\e[31mHomelab Server is NOT mounted. Type 'mount-server' to connect.\e[0m\n"
+    fi
   fi
-
 fi
 
 # Enable fzf history search dropdown (Ctrl+R)
@@ -170,3 +254,6 @@ export FZF_DEFAULT_OPTS=" \
   --color=marker:#B7BDF8,fg+:#CAD3F5,prompt:#C6A0F6,hl+:#ED8796 \
   --color=selected-bg:#AEAEFF \
   --color=border:#6E738D,label:#CAD3F5"
+
+# after everything is running, output status to temp file for checks
+echo "running" >/tmp/arch-wsl-status
