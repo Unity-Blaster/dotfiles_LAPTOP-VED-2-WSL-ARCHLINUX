@@ -3,7 +3,6 @@
 # ==============================================================================
 export ZSH="$HOME/.config/zsh/ohmyzsh"
 ZSH_THEME="frisk-unity"
-# ZSH_THEME="tokyonight"
 
 DISABLE_AUTO_TITLE="true"
 
