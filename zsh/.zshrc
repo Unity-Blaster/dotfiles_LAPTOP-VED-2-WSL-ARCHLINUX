@@ -128,6 +128,10 @@ alias gflow-b="gflow_basic.sh"
 alias ssh-lv1="ssh-lv1.sh"
 alias ssh-pv1="ssh-pv1.sh"
 
+# --- Copy and paste from windows clipboard ---
+alias copy="/home/vedan-wsl/.local/bin/win32yank.exe -i"
+alias paste="/home/vedan-wsl/.local/bin/win32yank.exe -o"
+
 # ==============================================================================
 # TMUX TAB RENAMING ENGINE
 # ==============================================================================
@@ -166,6 +170,8 @@ if [[ -n "$TMUX" ]]; then
       return
     elif [[ "$cmd1" == "gemini" ]]; then
       rename_tmux_window "gem"
+    elif [[ "$cmd1" == "agy" ]]; then
+      rename_tmux_window "agy"
     elif [[ "$cmd1" == "psql" ]]; then
       rename_tmux_window "psql"
     elif [[ "$cmd1" == "docker" ]]; then
@@ -188,6 +194,26 @@ if [[ -n "$TMUX" ]]; then
     rename_tmux_window "zsh"
   }
 fi
+
+# Automated PR Planning Tool for Antigravity CLI
+planpr() {
+  local MAIN_BRANCH="main"
+  local TEMP_PR=".git/gflow_pr_msg"
+  local RAW_DIFF_FILE="./gflow_raw_diff.txt"
+
+  echo "Fetching git changes..."
+  (git --no-pager log "${MAIN_BRANCH}"..HEAD && echo -e "\n---DIFF---\n" && git --no-pager diff "${MAIN_BRANCH}"..HEAD) | sed 's/@/[AT]/g' >"$RAW_DIFF_FILE"
+
+  echo "Streaming data to Antigravity CLI..."
+  agy -p "Plan my PR. Read the local file '$RAW_DIFF_FILE' in your active directory context to analyze the PR changes. DO NOT run an asynchronous find across the whole system. OUTPUT STRICTLY RAW TEXT and requested markdown. Line 1 must be the Title. Line 2 must be blank. Headings: ## Changelog, ### Summary, ### Key Changes, ### Fixes & Chores." >"$TEMP_PR"
+
+  echo "Cleaning up temporary files..."
+  rm -f "$RAW_DIFF_FILE"
+
+  echo "Done! Reading generated PR plan:"
+  echo "---------------------------------"
+  cat "$TEMP_PR"
+}
 
 # ==============================================================================
 # ZSH OPTIONS & TWEAKS
