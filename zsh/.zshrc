@@ -33,7 +33,6 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export ARCHFLAGS="-arch $(uname -m)"
 
-# Config Paths (Exported so you can use them in scripts/aliases)
 export ZSHCONF="$HOME/.config/zsh/.zshrc"
 export TMUXCONF="$HOME/.config/tmux/tmux.conf"
 export lzconf="$HOME/.config/nvim/lua/config"
@@ -63,7 +62,6 @@ export GEMINI_CLI_HOME="$XDG_DATA_HOME/gemini"
 # ==============================================================================
 # PATH EXPORTS
 # ==============================================================================
-# Consolidated to prevent messy duplicates
 export PATH="$HOME/scripts:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.spicetify:$PATH"
@@ -158,13 +156,12 @@ if [[ -n "$TMUX" ]]; then
   }
 
   function preexec() {
-    # Use standard POSIX 'read' to split the command into variables!
-    # This completely bypasses the shfmt Zsh-array parsing error!
+    # Use standard POSIX 'read' to split the command into variables
+    # This bypasses the shfmt Zsh-array parsing error
     local cmd1 cmd2 rest
     read -r cmd1 cmd2 rest <<<"$1"
 
     if [[ "$cmd1" == "v" || "$cmd1" == "nvim" ]]; then
-      # Do nothing. Let Neovim handle its own renaming!
       return
     elif [[ "$cmd1" == "gemini" ]]; then
       rename_tmux_window "gem"
@@ -223,8 +220,7 @@ eval "$(zoxide init zsh)"
 # ==============================================================================
 # WSL AUTO-BOUNCE
 # ==============================================================================
-# If WSL is launched from the default Windows home directory, instantly jump
-# to the native Linux home directory instead.
+# If WSL is launched from the default Windows home directory, instantly jump to the native Linux home directory instead.
 if [[ "$PWD" == "/mnt/c/Users/vedan" ]]; then
   cd ~
 fi
