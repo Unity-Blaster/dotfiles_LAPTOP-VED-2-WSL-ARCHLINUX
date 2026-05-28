@@ -5,7 +5,6 @@ export ZSH="$HOME/.config/zsh/ohmyzsh"
 ZSH_THEME="frisk-unity"
 
 DISABLE_AUTO_TITLE="true"
-
 CASE_SENSITIVE="true"
 ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
