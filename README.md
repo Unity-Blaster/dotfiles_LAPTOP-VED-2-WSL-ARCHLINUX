@@ -42,7 +42,7 @@ git clone ssh://git@git-ssh.unityblaster.com:2222/vedan/dotfiles_LAPTOP-VED-2-WS
 
 ##### Unauthenticated Pull
 ```bash
-git clone http://git-ssh.unityblaster.com:3000/vedan/dotfiles_LAPTOP-VED-2-WSL-ARCHLINUX.git ~/.config
+git clone https://git-ssh.unityblaster.com:3332/vedan/dotfiles_LAPTOP-VED-2-WSL-ARCHLINUX.git ~/.config
 ```
 
 #### From GitHub (mirrored repo)
